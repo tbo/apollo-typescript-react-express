@@ -3,6 +3,15 @@ import * as ReactDOM from 'react-dom';
 import Header from './components/header';
 import Navigation from './components/navigation';
 import {listen, getCurrentRoute, getActivePath, IRoute} from './router';
+import ApolloClient from 'apollo-boost';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloProvider } from 'react-apollo';
+
+const client = new ApolloClient({
+  link: new HttpLink(),
+  cache: new InMemoryCache(),
+} as any);
 
 interface IAppState {
   route: IRoute;
@@ -26,13 +35,15 @@ class App extends React.Component<{}, IAppState> {
   public render() {
     const {route} = this.state;
     return (
-      <div style={{paddingLeft: 20, paddingRight: 20}}>
-        <Header/>
-        <Navigation activePath={this.state.activePath}/>
-        <main style={{paddingTop: 20, paddingBottom: 20}}>
-          {!!route.component && <route.component route={route}/>}
-        </main>
-      </div>
+      <ApolloProvider client={client}>
+        <div style={{paddingLeft: 20, paddingRight: 20}}>
+          <Header/>
+          <Navigation activePath={this.state.activePath}/>
+          <main style={{paddingTop: 20, paddingBottom: 20}}>
+            {!!route.component && <route.component route={route}/>}
+          </main>
+        </div>
+      </ApolloProvider>
     );
   }
 }
