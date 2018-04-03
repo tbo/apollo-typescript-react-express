@@ -5,6 +5,7 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
   },
+  mode: 'development',
   entry: './client/index.tsx',
   output: {
     filename: 'app.js',
