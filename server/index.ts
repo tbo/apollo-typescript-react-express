@@ -1,8 +1,7 @@
 import * as express from 'express';
-import { ApolloEngine } from 'apollo-engine';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import * as bodyParser from 'body-parser';
-import getSchema from '../schema';
+import getSchema from './schema';
 import {MongoClient} from 'mongodb';
 import * as assert from 'assert';
 
@@ -30,6 +29,7 @@ if (process.env.NODE_ENV === 'development')  {
   }
   const webpackCompiler = require('webpack')(require('../webpack.config'));
   app.use(require('webpack-dev-middleware')(webpackCompiler, {stats, publicPath: '/'}));
+  app.use(require("webpack-hot-middleware")(webpackCompiler));
   /* tslint:enable*/
 }
 
@@ -45,9 +45,7 @@ MongoClient.connect(url, (err, client) => {
   app.use('/', express.static('public'));
   app.use('*', express.static('public/index.html'));
 
-  const engine = new ApolloEngine({apiKey: 'service:tbo-5431:CkVjrtG-8-nDvNQVGNRDig'});
-
-  engine.listen({port: 3000, expressApp: app});
+  app.listen(3000);
 
   console.info('Listening on Port http://localhost:3000');
 });

@@ -2,7 +2,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 
 const typeDefs = [`
   type Query {
-    getCustomers(limit: Int): [customer]
+    getCustomers(limit: Int, first: String): [customer]
   }
   type customer @cacheControl(maxAge: 60) {
     id: ID
