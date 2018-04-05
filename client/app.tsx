@@ -1,13 +1,15 @@
 import * as React from 'react';
 import Header from './components/header';
-import Navigation from './components/navigation';
 import ApolloClient from 'apollo-boost';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo';
 import { hot } from 'react-hot-loader';
 import Homepage from './pages/home';
+
 import '../public/bootstrap.min.css';
+import '../public/mdb.min.css';
+import '../public/common.css';
 
 const client = new ApolloClient({
   link: new HttpLink(),
@@ -16,10 +18,9 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
-    <div style={{paddingLeft: 20, paddingRight: 20}}>
+    <div>
       <Header/>
-      <Navigation activePath=''/>
-      <main style={{paddingTop: 20, paddingBottom: 20}}>
+      <main style={{padding: 20}}>
         <Homepage/>
       </main>
     </div>

@@ -1,12 +1,14 @@
 import * as React from 'react';
-import {Jumbotron} from 'react-bootstrap';
+import styled from 'styled-components';
+
+const HeaderNavigation = styled.header`
+  background-color: white;
+`;
 
 const Header = () => (
-  <header>
-    <Jumbotron>
-      A nice header
-    </Jumbotron>
-  </header>
+  <HeaderNavigation className='navbar'>
+    test
+  </HeaderNavigation>
 );
 
 export default Header;
