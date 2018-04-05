@@ -7,6 +7,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo';
 import { hot } from 'react-hot-loader';
 import Homepage from './pages/home';
+import '../public/bootstrap.min.css';
 
 const client = new ApolloClient({
   link: new HttpLink(),

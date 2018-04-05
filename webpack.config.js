@@ -19,7 +19,9 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.tsx?$/, loader: 'ts-loader' }
+      { test: /\.tsx?$/, loader: 'ts-loader' },
+      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+      {test: /\.(eot|ttf|woff|woff2|png|jpg|gif|svg)$/, loader: 'file-loader'}
     ]
   },
   plugins: [
