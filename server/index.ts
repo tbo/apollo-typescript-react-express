@@ -14,6 +14,7 @@ MongoClient.connect(url, (error, client) => {
   const db = client.db(client.s.options.dbName);
 
   if (process.env.NODE_ENV === 'development')  {
+    app.use(require('connect-history-api-fallback')());
     const webpackCompiler = require('webpack')(require('../webpack.config'));
     app.use(require('webpack-dev-middleware')(webpackCompiler, {stats: 'errors-only', publicPath: '/'}));
     app.use(require('webpack-hot-middleware')(webpackCompiler));

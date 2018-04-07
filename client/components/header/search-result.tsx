@@ -1,9 +1,10 @@
 import * as React from 'react';
 import gql from 'graphql-tag';
 import {Query} from 'react-apollo';
+import {Link} from 'react-router-dom';
 
 const searchCustomer = gql`
-  query dog($searchTerm: String!) {
+  query search($searchTerm: String!) {
    searchCustomers(query: $searchTerm, limit: 20) { id, first, last, email }
   }
 `;
@@ -15,7 +16,9 @@ const handleSearchResult = ({data}) => (
 );
 
 const getSearchResulItem = ({id, first, last}) => (
-  <li key={id}>{last}, {first}</li>
+  <li key={id}>
+    <Link to={`/customer/${id}`}>{last}, {first}</Link>
+  </li>
 );
 
 const SearchResult = ({searchTerm, top}) => (

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import SearchResult from './search-result';
+import {withRouter, RouteComponentProps} from 'react-router';
 
 const headerHeight = 60;
 
@@ -9,10 +10,15 @@ const HeaderNavigation = styled.header`
   margin-bottom: ${headerHeight}px;
 `;
 
-class Header extends React.Component {
-  public state = { searchTerm: null };
+class Header extends React.Component<RouteComponentProps<any>> {
+  public state = {searchTerm: null, location: null};
 
-  private setSearchTerm = (event) => this.setState({searchTerm: event.target.value});
+  private setSearchTerm = (event) =>
+    this.setState({searchTerm: event.target.value, location: this.props.location.pathname})
+
+  public static getDerivedStateFromProps(nextProps, prevState) {
+    return nextProps.location.pathname !== prevState.location ?  {searchTerm: null} : null;
+  }
 
   public render() {
     return (
@@ -39,4 +45,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);
