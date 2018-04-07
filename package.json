@@ -43,10 +43,8 @@
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "graphql-tag": "^2.8.0",
-    "history": "^4.7.2",
     "html-webpack-plugin": "^3.2.0",
     "nodemon": "^1.12.1",
-    "qs": "^6.5.1",
     "react": "^16.0.0",
     "react-apollo": "^2.1.2",
     "react-bootstrap": "^0.32.1",
@@ -59,7 +57,6 @@
     "tslint": "^5.8.0",
     "tslint-react": "^3.2.0",
     "typescript": "^2.6.1",
-    "url-pattern": "^1.0.3",
     "webpack": "^4.1.1",
     "webpack-dev-middleware": "^3.0.1",
     "webpack-hot-middleware": "^2.21.2"
