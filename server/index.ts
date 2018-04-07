@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import getSchema from './schema';
 import {MongoClient} from 'mongodb';
 import * as assert from 'assert';
+import * as jwt from 'express-jwt';
 
 const url = process.env.MONGO_URL || 'mongodb://localhost:27017/local';
 
@@ -24,6 +25,7 @@ MongoClient.connect(url, (error, client) => {
   app.get('/', express.static('public'));
   app.post(
     '/graphql',
+    jwt({secret: 'shhhhhhared-secret'}),
     bodyParser.json(),
     graphqlExpress({schema: getSchema(db), tracing: true, cacheControl: true})
   );
