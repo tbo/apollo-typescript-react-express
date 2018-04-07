@@ -7,9 +7,9 @@ import { ApolloProvider } from 'react-apollo';
 import { hot } from 'react-hot-loader';
 import Homepage from './pages/home';
 
-import '../public/bootstrap.min.css';
-import '../public/mdb.min.css';
-import '../public/common.css';
+import 'mdbootstrap/css/bootstrap.css';
+import 'mdbootstrap/css/mdb.css';
+import './common.css';
 
 const client = new ApolloClient({
   link: new HttpLink(),

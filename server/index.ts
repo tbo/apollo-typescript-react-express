@@ -9,39 +9,22 @@ const url = process.env.MONGO_URL || 'mongodb://localhost:27017/local';
 
 const app = express();
 
-if (process.env.NODE_ENV === 'development')  {
-  /* tslint:disable */
-  const stats = {
-    colors: false,
-    hash: false,
-    version: false,
-    timings: false,
-    assets: false,
-    chunks: false,
-    modules: false,
-    reasons: false,
-    children: false,
-    source: false,
-    errors: true,
-    errorDetails: true,
-    warnings: true,
-    publicPath: false
-  }
-  const webpackCompiler = require('webpack')(require('../webpack.config'));
-  app.use(require('webpack-dev-middleware')(webpackCompiler, {stats, publicPath: '/'}));
-  app.use(require('webpack-hot-middleware')(webpackCompiler));
-  /* tslint:enable*/
-}
-
 MongoClient.connect(url, (error, client) => {
   assert.equal(null, error);
   const db = client.db(client.s.options.dbName);
+
+  if (process.env.NODE_ENV === 'development')  {
+    const webpackCompiler = require('webpack')(require('../webpack.config'));
+    app.use(require('webpack-dev-middleware')(webpackCompiler, {stats: 'errors-only', publicPath: '/'}));
+    app.use(require('webpack-hot-middleware')(webpackCompiler));
+    app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
+  }
+
   app.use(
     '/graphql',
     bodyParser.json(),
     graphqlExpress({schema: getSchema(db), tracing: true, cacheControl: true})
   );
-  app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
   app.use('/', express.static('public'));
   app.use('*', express.static('public/index.html'));
 
