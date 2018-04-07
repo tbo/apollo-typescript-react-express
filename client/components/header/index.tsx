@@ -2,6 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import SearchResult from './search-result';
 import {withRouter, RouteComponentProps} from 'react-router';
+import {Link} from 'react-router-dom';
 
 const headerHeight = 60;
 
@@ -27,7 +28,7 @@ class Header extends React.Component<RouteComponentProps<any>> {
           className='navbar fixed-top navbar-expand-lg navbar-light scrolling-navbar white lighten-5'
           style={{height: headerHeight}}
         >
-          <a className='navbar-brand' href='#'><strong>My Application</strong></a>
+          <Link className='navbar-brand' to='/'><strong>My Application</strong></Link>
           <form style={{marginLeft: 40}}>
             <div className='md-form mt-0' style={{width: 500}}>
               <input
