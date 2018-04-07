@@ -21,12 +21,12 @@ MongoClient.connect(url, (error, client) => {
     app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
   }
 
-  app.use(
+  app.get('/', express.static('public'));
+  app.post(
     '/graphql',
     bodyParser.json(),
     graphqlExpress({schema: getSchema(db), tracing: true, cacheControl: true})
   );
-  app.use('/', express.static('public'));
   app.use('*', express.static('public/index.html'));
 
   app.listen(3000);

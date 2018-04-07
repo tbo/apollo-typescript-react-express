@@ -40,7 +40,6 @@
     "apollo-boost": "^0.1.4",
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-link-http": "^1.5.3",
-    "axios": "^0.18.0",
     "connect-history-api-fallback": "^1.5.0",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
