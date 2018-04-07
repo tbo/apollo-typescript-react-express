@@ -3,6 +3,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 const typeDefs = [`
   type Query {
     getCustomers(limit: Int, first: String): [customer]
+    searchCustomers(limit: Int, query: String!): [customer]
   }
   type customer @cacheControl(maxAge: 60) {
     id: ID
@@ -25,6 +26,10 @@ const getResolvers = (db) => ({
   Query: {
     getCustomers(root, {limit, ...query}, context) {
       return db.collection('customers').find(query).limit(limit || 100).toArray();
+    },
+    searchCustomers(root, {limit, query}, context) {
+      const regex = new RegExp(`.*${query}.*`, 'i');
+      return db.collection('customers').find({$or: [{first: regex}, {last: regex}]}).limit(limit || 100).toArray();
     }
   }
 });

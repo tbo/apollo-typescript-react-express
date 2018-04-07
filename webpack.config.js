@@ -26,7 +26,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Hot Module Replacement'
+      title: 'My Application'
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NamedModulesPlugin(),

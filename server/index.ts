@@ -29,12 +29,12 @@ if (process.env.NODE_ENV === 'development')  {
   }
   const webpackCompiler = require('webpack')(require('../webpack.config'));
   app.use(require('webpack-dev-middleware')(webpackCompiler, {stats, publicPath: '/'}));
-  app.use(require("webpack-hot-middleware")(webpackCompiler));
+  app.use(require('webpack-hot-middleware')(webpackCompiler));
   /* tslint:enable*/
 }
 
-MongoClient.connect(url, (err, client) => {
-  assert.equal(null, err);
+MongoClient.connect(url, (error, client) => {
+  assert.equal(null, error);
   const db = client.db(client.s.options.dbName);
   app.use(
     '/graphql',
