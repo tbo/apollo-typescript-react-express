@@ -1,7 +1,13 @@
 import * as React from 'react';
 import Header from './components/header';
-import ApolloClient from 'apollo-boost';
+import {ApolloClient} from 'apollo-client';
+import {split, from} from 'apollo-link';
+import {WebSocketLink} from 'apollo-link-ws';
+import {HttpLink} from 'apollo-link-http';
 import {ApolloProvider} from 'react-apollo';
+import {onError} from 'apollo-link-error';
+import {getMainDefinition} from 'apollo-utilities';
+import {InMemoryCache} from 'apollo-cache-inmemory';
 import {hot} from 'react-hot-loader';
 import {Router, Route, Switch} from 'react-router-dom';
 import Dashboard from './pages/dashboard';
@@ -13,13 +19,32 @@ import 'mdbootstrap/css/mdb.css';
 import 'font-awesome/css/font-awesome.css';
 import './common.css';
 
-const onError = history => (error) => {
-  if (error.networkError && error.networkError.statusCode === 401) {
+const httpLink = new HttpLink({
+  uri: '/graphql',
+  credentials: 'include'
+});
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:5000/`,
+  options: {reconnect: true}
+});
+
+const getLink = history => split(
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query);
+    return kind === 'OperationDefinition' && operation === 'subscription';
+  },
+  wsLink,
+  from([getErrorLink(history), httpLink])
+);
+
+const getErrorLink = history => onError((error) => {
+  if (error.networkError && (error.networkError as any).statusCode === 401) {
     history.push('/login');
   }
-};
+});
 
-const getClient = (history) => new ApolloClient({onError: onError(history)});
+const getClient = (history) => new ApolloClient({link: getLink(history), cache: new InMemoryCache()});
 
 const App = ({history}) => (
   <ApolloProvider client={getClient(history)}>

@@ -21,4 +21,4 @@ const Homepage = (data) => (
 
 export default graphql(
   gql`{ getUser { recentlyViewed { id, first, last } } }`,
-  {options: {fetchPolicy: 'network-only'}})(Homepage);
+  {options: {fetchPolicy: 'cache-and-network'}})(Homepage);
