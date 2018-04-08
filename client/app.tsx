@@ -4,7 +4,6 @@ import ApolloClient from 'apollo-boost';
 import {ApolloProvider} from 'react-apollo';
 import {hot} from 'react-hot-loader';
 import {Router, Route, Switch} from 'react-router-dom';
-import {createBrowserHistory} from 'history';
 import Dashboard from './pages/dashboard';
 import Customer from './pages/customer';
 import Login from './pages/login';
@@ -14,18 +13,16 @@ import 'mdbootstrap/css/mdb.css';
 import 'font-awesome/css/font-awesome.css';
 import './common.css';
 
-const history = createBrowserHistory();
-
-const onError = (error) => {
+const onError = history => (error) => {
   if (error.networkError && error.networkError.statusCode === 401) {
     history.push('/login');
   }
 };
 
-const client = new ApolloClient({onError});
+const getClient = (history) => new ApolloClient({onError: onError(history)});
 
-const App = () => (
-  <ApolloProvider client={client}>
+const App = ({history}) => (
+  <ApolloProvider client={getClient(history)}>
     <Router history={history}>
       <Switch>
         <Route exact path='/login' component={Login}/>
