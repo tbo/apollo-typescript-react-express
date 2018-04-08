@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import SearchResult from './search-result';
 import {withRouter, RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
+import User from './user';
 
 const headerHeight = 60;
 
@@ -39,6 +40,13 @@ class Header extends React.Component<RouteComponentProps<any>> {
               />
             </div>
           </form>
+          <div className='collapse navbar-collapse justify-content-end'>
+            <ul className='navbar-nav'>
+              <li className='nav-item'>
+                <User/>
+              </li>
+            </ul>
+          </div>
         </nav>
         {this.state.searchTerm && <SearchResult searchTerm={this.state.searchTerm} top={headerHeight + 1}/> }
       </HeaderNavigation>

@@ -11,6 +11,7 @@ import Login from './pages/login';
 
 import 'mdbootstrap/css/bootstrap.css';
 import 'mdbootstrap/css/mdb.css';
+import 'font-awesome/css/font-awesome.css';
 import './common.css';
 
 const history = createBrowserHistory();

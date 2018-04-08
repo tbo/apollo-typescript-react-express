@@ -1,11 +1,11 @@
 import * as express from 'express';
+import {Request} from 'express';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import * as bodyParser from 'body-parser';
 import getSchema from './schema';
 import * as cookieParser from 'cookie-parser';
 import {MongoClient} from 'mongodb';
 import * as assert from 'assert';
-import * as jwtMiddleware from 'express-jwt';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
@@ -20,7 +20,7 @@ const authenticate = db => (req, res) => {
       return res.status(401).send('User unknown');
     }
     bcrypt.compare(password, user.password, (hashErr, result) => {
-      const authToken = jwt.sign({userId: user._id}, 'shhhhhhared-secret');
+      const authToken = jwt.sign(JSON.stringify({userId: user._id}), 'shhhhhhared-secret');
       if (hashErr || !result) {
         return res.status(401).send('Wrong password');
       }
@@ -32,14 +32,17 @@ const authenticate = db => (req, res) => {
   });
 };
 
+declare global {
+  namespace Express {
+    interface Request {
+      session?: object;
+    }
+  }
+}
+
 const validateToken = (req, res, next) => {
   try {
-    req.userId = jwt.verify(req.cookies.token, 'shhhhhhared-secret');
-    // This should never happen, but querying without a userId would have
-    // serious security implications, so it is being checked explicitly.
-    if (!req.userId) {
-      return res.sendStatus(401);
-    }
+    req.session = jwt.verify(req.cookies.token, 'shhhhhhared-secret');
   } catch (err) {
     return res.sendStatus(401);
   }
@@ -65,7 +68,7 @@ MongoClient.connect(url, (error, client) => {
     cookieParser(),
     validateToken,
     bodyParser.json(),
-    graphqlExpress({schema: getSchema(db), tracing: true, cacheControl: true})
+    graphqlExpress(({session}) => ({schema: getSchema(db), tracing: true, cacheControl: true, context: {session}}))
   );
   app.use('*', express.static('public/index.html'));
 
