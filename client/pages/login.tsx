@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {withRouter, RouteComponentProps} from 'react-router';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -17,26 +18,54 @@ const Card = styled.div`
   margin-bottom: 200px;
 `;
 
-const Login = () => (
-  <Container>
-    <Card className='card'>
-      <form>
-        <p className='h4 text-center mb-4'>Sign in</p>
+class Login extends React.Component<RouteComponentProps<any>> {
+  public state = {hasFailed: false};
 
-        <label className='grey-text'>Your username</label>
-        <input type='text' className='form-control'/>
+  private username: HTMLInputElement;
+  private password: HTMLInputElement;
 
-        <br/>
+  private authenticate = (event) => {
+    event.preventDefault();
+    this.setState({hasFailed: false});
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 401) {
+          this.setState({hasFailed: true});
+        } else {
+          this.props.history.push('/');
+        }
+      }
+    };
+    xhr.open('POST', '/authenticate', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({username: this.username.value, password: this.password.value}));
+  }
 
-        <label className='grey-text'>Your password</label>
-        <input type='password' className='form-control'/>
+  public render() {
+    return (
+      <Container>
+        <Card className='card'>
+          <form onSubmit={this.authenticate}>
+            <p className='h4 text-center mb-4'>Sign in</p>
 
-        <div className='text-center mt-4'>
-          <button className='btn btn-indigo' type='submit'>Login</button>
-        </div>
-      </form>
-    </Card>
-  </Container>
-);
+            {this.state.hasFailed && <div className='alert alert-danger'>Invalid credentials</div>}
+            <label className='grey-text'>Your username</label>
+            <input type='text' className='form-control' ref={ref => this.username = ref}/>
 
-export default Login;
+            <br/>
+
+            <label className='grey-text'>Your password</label>
+            <input type='password' className='form-control' ref={ref => this.password = ref}/>
+
+            <div className='text-center mt-4'>
+              <button className='btn btn-indigo' type='submit' onClick={this.authenticate}>Login</button>
+            </div>
+          </form>
+        </Card>
+      </Container>
+    );
+  }
+}
+
+export default withRouter(Login);
