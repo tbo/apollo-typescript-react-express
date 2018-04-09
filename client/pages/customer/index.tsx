@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
+import Viewers from './viewers';
 
 const getCustomer = gql`
   query get($customerId: ID!) {
@@ -14,9 +15,19 @@ const viewCustomer = gql`
   }
 `;
 
-class Customer extends React.Component<{query: any, mutation: any, match: any}> {
+const unwatchCustomer = gql`
+  mutation viewCustomer($customerId: ID!) {
+    unwatchCustomer(customerId: $customerId)
+  }
+`;
+
+class Customer extends React.Component<{query: any, mutation: any, match: any, unwatch: any}> {
   public componentDidMount() {
     this.props.mutation();
+  }
+
+  public componentWillUnmount() {
+    this.props.unwatch();
   }
 
   public render() {
@@ -29,6 +40,7 @@ class Customer extends React.Component<{query: any, mutation: any, match: any}> 
       <div>
         <b>{last}, {first}</b><br/>
         {email}
+        <Viewers customerId={this.props.match.params.id}/>
       </div>
     );
   }
@@ -39,4 +51,5 @@ const getOptions = (name: string) => ({
   options: (props) => ({variables: {customerId: props.match.params.id}})
 });
 export default graphql(viewCustomer, getOptions('mutation'))(
-  graphql(getCustomer, getOptions('query'))(Customer));
+  graphql(unwatchCustomer, getOptions('unwatch'))(
+  graphql(getCustomer, getOptions('query'))(Customer)));

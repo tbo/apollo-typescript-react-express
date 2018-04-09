@@ -4,13 +4,13 @@ import gql from 'graphql-tag';
 import {Link} from 'react-router-dom';
 
 const Customer = ({first, last, id}) => (
-  <p>
+  <p key={id}>
     <i className='fa fa-user-o' style={{marginRight: 10}}/>
     <Link to={`/customer/${id}`}>{last}, {first}</Link>
   </p>
 );
 
-const Homepage = (data) => (
+const Dashboard = (data) => (
   <div>
     <div className='card' style={{padding: 20, maxWidth: 450}}>
       <h4 style={{marginBottom: 20}}>Recently Viewed</h4>
@@ -21,4 +21,4 @@ const Homepage = (data) => (
 
 export default graphql(
   gql`{ getUser { recentlyViewed { id, first, last } } }`,
-  {options: {fetchPolicy: 'cache-and-network'}})(Homepage);
+  {options: {fetchPolicy: 'cache-and-network'}})(Dashboard);

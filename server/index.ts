@@ -1,6 +1,8 @@
 import * as express from 'express';
-import {Request} from 'express';
-import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import {execute, subscribe} from 'graphql';
+import {SubscriptionServer} from 'subscriptions-transport-ws';
+import {graphqlExpress, graphiqlExpress} from 'apollo-server-express';
+import {createServer} from 'http';
 import * as bodyParser from 'body-parser';
 import getSchema from './schema';
 import * as cookieParser from 'cookie-parser';
@@ -52,6 +54,7 @@ const validateToken = (req, res, next) => {
 MongoClient.connect(url, (error, client) => {
   assert.equal(null, error);
   const db = client.db(client.s.options.dbName);
+  const schema = getSchema(db);
 
   if (process.env.NODE_ENV === 'development')  {
     app.use(require('connect-history-api-fallback')());
@@ -68,11 +71,17 @@ MongoClient.connect(url, (error, client) => {
     cookieParser(),
     validateToken,
     bodyParser.json(),
-    graphqlExpress(({session}) => ({schema: getSchema(db), tracing: true, cacheControl: true, context: {session}}))
+    graphqlExpress(({session}) => ({schema, tracing: true, cacheControl: true, context: {session}}))
   );
   app.use('*', express.static('public/index.html'));
 
-  app.listen(3000);
+  const ws = createServer(app);
+  ws.listen(3000, () => {
+    new SubscriptionServer(
+      {execute, subscribe, schema},
+      {server: ws, path: '/subscriptions'}
+    );
+  });
 
   console.info('Listening on Port http://localhost:3000');
 });

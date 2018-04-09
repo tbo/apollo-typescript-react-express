@@ -31,7 +31,7 @@ class Header extends React.Component<RouteComponentProps<any>> {
         >
           <Link className='navbar-brand' to='/'><strong>My Application</strong></Link>
           <form style={{marginLeft: 40}}>
-            <div className='md-form mt-0' style={{width: 500}}>
+            <div className='md-form mt-0' style={{maxWidth: 500, width: '100%'}}>
               <input
                 className='form-control mr-sm-2'
                 type='text'

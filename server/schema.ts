@@ -1,4 +1,5 @@
-import { makeExecutableSchema } from 'graphql-tools';
+import {makeExecutableSchema} from 'graphql-tools';
+import {PubSub} from 'graphql-subscriptions';
 import {ObjectId} from 'mongodb';
 import {uniq} from 'ramda';
 
@@ -10,6 +11,10 @@ const typeDefs = [`
   }
   type Mutation {
     viewCustomer(customerId: ID): Boolean
+    unwatchCustomer(customerId: ID): Boolean
+  }
+  type Subscription {
+    viewingCustomer(customerId: ID): [user]
   }
   type customer @cacheControl(maxAge: 60) {
     id: ID
@@ -21,6 +26,7 @@ const typeDefs = [`
     country: String
   }
   type user @cacheControl(maxAge: 60) {
+    _id: ID!
     first: String!
     last: String!
     email: String
@@ -35,6 +41,9 @@ const typeDefs = [`
     customerId: ID
   }
 `];
+
+const pubsub = new PubSub();
+const watchers = {};
 
 const getRecentlyViewed = (db, customerIds: number[]) => () =>
   db.collection('customers').find({id: {$in: customerIds}}).toArray()
@@ -55,13 +64,42 @@ const getResolvers = (db) => ({
     }
   },
   Mutation: {
+    unwatchCustomer(root, {customerId}, {session}) {
+      if (Array.isArray(watchers[customerId])) {
+        if (watchers[customerId].length === 1) {
+          delete watchers[customerId];
+        } else {
+          watchers[customerId] = watchers[customerId].filter(watcher => watcher !== session.userId);
+        }
+      }
+      pubsub.publish(`viewingCustomer:${customerId}`, {watchers: watchers[customerId]});
+    },
     viewCustomer(root, {customerId}, {session}) {
+      if (watchers[customerId]) {
+        watchers[customerId].push(session.userId);
+      } else {
+        watchers[customerId] = [session.userId];
+      }
+      pubsub.publish(`viewingCustomer:${customerId}`, {watchers: watchers[customerId]});
       return db.collection('users').find({_id: new ObjectId(session.userId)}).snapshot().forEach((doc) => {
         doc.recentlyViewedCustomers = uniq([parseInt(customerId, 10), ...doc.recentlyViewedCustomers]).slice(0, 10);
         db.collection('users').save(doc);
       });
     }
-  }
+  },
+  Subscription: {
+    viewingCustomer: {
+      resolve: (payload, args, context, info) => {
+        if (!payload.watchers) {
+          return [];
+        }
+        const userIds = payload.watchers.map(watcher => new ObjectId(watcher));
+        return db.collection('users').find({_id: {$in: userIds}}).toArray();
+      },
+      subscribe: (payload, {customerId}) =>
+        pubsub.asyncIterator(`viewingCustomer:${customerId}`)
+    },
+  },
 });
 
 export default (db) => makeExecutableSchema({typeDefs, resolvers: getResolvers(db)});
