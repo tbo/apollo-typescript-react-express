@@ -57,11 +57,11 @@ MongoClient.connect(url, (error, client) => {
   const schema = getSchema(db);
 
   if (process.env.NODE_ENV === 'development')  {
+    app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
     app.use(require('connect-history-api-fallback')());
     const webpackCompiler = require('webpack')(require('../webpack.config'));
     app.use(require('webpack-dev-middleware')(webpackCompiler, {stats: 'errors-only', publicPath: '/'}));
     app.use(require('webpack-hot-middleware')(webpackCompiler));
-    app.use('/graphiql', graphiqlExpress({endpointURL: '/graphql'}));
   }
 
   app.get('/', express.static('public'));
@@ -76,12 +76,12 @@ MongoClient.connect(url, (error, client) => {
   app.use('*', express.static('public/index.html'));
 
   const ws = createServer(app);
-  ws.listen(3000, () => {
+  ws.listen(3000, () =>
     new SubscriptionServer(
       {execute, subscribe, schema},
       {server: ws, path: '/subscriptions'}
-    );
-  });
+    )
+  );
 
   console.info('Listening on Port http://localhost:3000');
 });

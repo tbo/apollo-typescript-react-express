@@ -23,7 +23,7 @@ const unwatchCustomer = gql`
 
 class Customer extends React.Component<{query: any, mutation: any, match: any, unwatch: any}> {
   public componentDidMount() {
-    this.props.mutation();
+    setTimeout(this.props.mutation, 500);
   }
 
   public componentWillUnmount() {
@@ -38,8 +38,10 @@ class Customer extends React.Component<{query: any, mutation: any, match: any, u
     const {last, first, email} = this.props.query.getCustomer;
     return (
       <div>
-        <b>{last}, {first}</b><br/>
-        {email}
+        <div className='card' style={{padding: 20}}>
+          <b>{last}, {first}</b><br/>
+          <span><i className='fa fa-envelope'/> {email}</span>
+        </div>
         <Viewers customerId={this.props.match.params.id}/>
       </div>
     );

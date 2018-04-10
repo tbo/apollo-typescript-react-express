@@ -14,7 +14,8 @@ const getUserLabel = ({first, last, _id}) =>
 const Viewers = ({customerId}) => (
   <Subscription subscription={viewingCustomer} variables={{customerId}}>
     {({data, loading}) => (
-      <div>
+      <div style={{marginTop: 50}}>
+        <h5>Watchers</h5>
         {!loading && data.viewingCustomer.map(getUserLabel)}
       </div>
     )}

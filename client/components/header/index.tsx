@@ -4,6 +4,7 @@ import SearchResult from './search-result';
 import {withRouter, RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
 import User from './user';
+const logo = require('./logo.png');
 
 const headerHeight = 60;
 
@@ -29,7 +30,9 @@ class Header extends React.Component<RouteComponentProps<any>> {
           className='navbar fixed-top navbar-expand-lg navbar-light scrolling-navbar white lighten-5'
           style={{height: headerHeight}}
         >
-          <Link className='navbar-brand' to='/'><strong>My Application</strong></Link>
+          <Link className='navbar-brand' to='/'>
+            <img src={logo} height={48}/>
+          </Link>
           <form style={{marginLeft: 40}}>
             <div className='md-form mt-0' style={{maxWidth: 500, width: '100%'}}>
               <input
